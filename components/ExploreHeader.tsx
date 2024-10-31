@@ -5,7 +5,7 @@ import Colors, { Color } from '@/Constants/Colors';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { Link } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 
 const categories = [
@@ -46,6 +46,8 @@ const ExploreHeader = ({ onCategoryChanged }: Props) => {
     onCategoryChanged(categories[index].name);
   };
 
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView>
       <View style={styles.container}>
@@ -69,7 +71,9 @@ const ExploreHeader = ({ onCategoryChanged }: Props) => {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity 
+             //@ts-ignore 
+          onPress={() => navigation.navigate('Notification')}>
             <Ionicons name="notifications-outline" size={30} color={Colors.grey}/>
             </TouchableOpacity>
       

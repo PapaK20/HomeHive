@@ -5,6 +5,7 @@ import { FontSize, Border } from "../Constants/Styles";
 import Colors, { Color } from "@/Constants/Colors";
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { useNavigation } from '@react-navigation/native';
 
 const ProfileScreen = () => {
   const [isEditing, setIsEditing] = React.useState(false);
@@ -28,6 +29,8 @@ const ProfileScreen = () => {
   const handleEditPress = () => {
     setIsEditing(!isEditing);
   };
+
+  const navigation = useNavigation();
 
   return (
     <ScrollView style={styles.container}>
@@ -79,8 +82,10 @@ const ProfileScreen = () => {
       )}
 
       <View style={styles.section}>
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="person-outline" size={24} color={Color.colorBlack} style={styles.menuIcon} />
+        <TouchableOpacity style={styles.menuItem}  
+        //@ts-ignore
+        onPress={() => navigation.navigate('Personal')}>
+          <Ionicons name="person-outline" size={24} color={Color.colorBlack} style={styles.menuIcon}/>
           <Text style={styles.menuItemText}>Personal information</Text>
           <Ionicons name="chevron-forward" size={24} color={Color.colorGray_200} />
         </TouchableOpacity>
@@ -117,7 +122,9 @@ const ProfileScreen = () => {
       <TouchableOpacity style={styles.logoutButton}>
         <Text style={styles.logoutText}>Log out</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.HostButton}>
+      <TouchableOpacity style={styles.HostButton}
+      //@ts-ignore
+      onPress={() => navigation.navigate('First')}>
         <Text style={styles.logoutText}>Sign Up As Host</Text>
       </TouchableOpacity>
 
@@ -197,7 +204,7 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     alignItems: 'center',
-    padding: 16,
+    padding: 12,
     marginTop: 24,
   },
   HostButton: {

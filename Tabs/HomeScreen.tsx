@@ -16,7 +16,7 @@ const HomeScreen = () => {
     <View style={{ flex: 1 }}>
       <ExploreHeader onCategoryChanged={onDataChanged} />
       <View style={{ flex: 1 }}>
-        <Listings listings={items} category={category} />
+        <Listings items={items} category={category} />
       </View>
     </View>
   );

@@ -2,45 +2,56 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors, { Color } from '@/Constants/Colors';
+import airbnbListings from '@/assets/data/airbnb-listings.json';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-const bookingsData = [
-  {
-    id: '1',
-    title: 'Cozy Cabin in the Woods',
-    location: 'Lake Tahoe, CA',
-    dates: 'Aug 15 - Aug 20, 2023',
-    image: 'https://example.com/cabin.jpg',
-    status: 'Upcoming',
-  },
-  // Add more booking items here
-];
+type RootStackParamList = {
+  Listing: { id: string };
+};
+
+type BookingsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Listing'>;
 
 const BookingItem: React.FC<{
+  id: string;
   title: string;
   location: string;
   dates: string;
   image: string;
   status: string;
-}> = ({ title, location, dates, image, status }) => (
-  <TouchableOpacity style={styles.bookingItem}>
-    <Image source={{ uri: image }} style={styles.bookingImage} />
-    <View style={styles.bookingInfo}>
-      <Text style={styles.bookingTitle}>{title}</Text>
-      <Text style={styles.bookingLocation}>{location}</Text>
-      <Text style={styles.bookingDates}>{dates}</Text>
-      <Text style={styles.bookingStatus}>{status}</Text>
-    </View>
-    <Ionicons name="chevron-forward" size={24} color={Colors.grey} />
-  </TouchableOpacity>
-);
+}> = ({ id, title, location, dates, image, status }) => {
+  const navigation = useNavigation<BookingsScreenNavigationProp>();
+
+  return (
+    <TouchableOpacity 
+      style={styles.bookingItem}
+      //@ts-ignore
+      onPress={() => navigation.navigate('Payment', { id })}>
+      <Image source={{ uri: image }} style={styles.bookingImage} />
+      <View style={styles.bookingInfo}>
+        <Text style={styles.bookingTitle}>{title}</Text>
+        <Text style={styles.bookingLocation}>{location}</Text>
+        <Text style={styles.bookingDates}>{dates}</Text>
+        <Text style={styles.bookingStatus}>{status}</Text>
+      </View>
+      <Ionicons name="chevron-forward" size={24} color={Colors.grey} />
+    </TouchableOpacity>
+  );
+};
 
 const Bookings = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Trips</Text>
       <FlatList
-        data={bookingsData}
-        renderItem={({ item }) => <BookingItem {...item} />}
+        data={airbnbListings as any[]}
+        renderItem={({ item }) => (
+          <BookingItem
+            id={item.id}
+            title={item.name}
+            location={`${item.city}, ${item.country}`}
+            image={item.xl_picture_url} dates={''} status={''}          />
+        )}
         keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
       />

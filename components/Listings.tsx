@@ -6,22 +6,26 @@ import { useNavigation } from '@react-navigation/native';
 import Animated, { FadeInRight, FadeOutLeft } from 'react-native-reanimated';
 import listingsData from '@/assets/data/airbnb-listings.json';
 
-interface Props {
-  listings: any[];
+interface ListingsProps {
+
+  items: any[];
+
   category: string;
+
 }
 
-const Listings = ({ listings, category }: Props) => {
+const Listings: React.FC<ListingsProps> = () => {
   const navigation = useNavigation();
 
   const renderRow: ListRenderItem<any> = ({ item }) => (
     <TouchableOpacity 
      //@ts-ignore
-     onPress={() => navigation.navigate('Preview', { item })}>      
+     onPress={() => navigation.navigate('Preview',  { item })}>      
     <Animated.View style={styles.listing} entering={FadeInRight} exiting={FadeOutLeft}>
     <Animated.Image 
   source={{ uri: item.picture_url && typeof item.picture_url === 'string' ? item.picture_url : undefined }} 
-  style={styles.image}/>
+  style={styles.image}
+/>
         <TouchableOpacity style={styles.heartButton}>
           <Ionicons name="heart-outline" size={24} color="#fff" />
         </TouchableOpacity>
@@ -39,16 +43,16 @@ const Listings = ({ listings, category }: Props) => {
       </Animated.View>
     </TouchableOpacity>
   );
-
   return (
-    <View style={defaultStyles.container}>
-      <FlatList 
-        data={listingsData as any[]}
-        renderItem={renderRow}
-        keyExtractor={(item) => item.id.toString()}
-      />
-    </View>
-  );
+  <FlatList
+    data={listingsData as any[]}
+    renderItem={renderRow}
+    showsVerticalScrollIndicator={false}
+    contentContainerStyle={{ paddingBottom: 20 }}
+    style={defaultStyles.container}
+  />
+);
+
 };
 
 const styles = StyleSheet.create({

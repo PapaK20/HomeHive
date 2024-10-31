@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Color.colorWhite,
     padding: 16,
+    marginTop: 25,
   },
   title: {
     fontSize: FontSize.size_xl,
