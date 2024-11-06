@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { Text, StyleSheet, View, ScrollView, TouchableOpacity, TextInput } from "react-native";
 import { Image } from "expo-image";
 import { FontSize, Border } from "../Constants/Styles";
@@ -6,12 +6,34 @@ import Colors, { Color } from "@/Constants/Colors";
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
+import auth from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
 
 const ProfileScreen = () => {
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [name, setName] = React.useState("Kevin Hart");
-  const [phoneNumber, setPhoneNumber] = React.useState("+1 234 567 8900");
-  const [image, setImage] = React.useState("../assets/ellipse-144.png");
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [image, setImage] = useState('');
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const user = auth().currentUser;
+      if (user) {
+        const userProfile = await firestore().collection('users').doc(user.uid).get();
+        if (userProfile.exists) {
+          const data = userProfile.data();
+          if (data) {
+            const { name, phoneNumber, image } = data;
+            setName(name);
+            setPhoneNumber(phoneNumber);
+            setImage(image);
+          }
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -28,6 +50,18 @@ const ProfileScreen = () => {
 
   const handleEditPress = () => {
     setIsEditing(!isEditing);
+  };
+
+  const handleSaveChanges = async () => {
+    const user = auth().currentUser;
+    if (user) {
+      await firestore().collection('users').doc(user.uid).set({
+        name,
+        phoneNumber,
+        image,
+      });
+    }
+    setIsEditing(false);
   };
 
   const navigation = useNavigation();
@@ -75,7 +109,7 @@ const ProfileScreen = () => {
               keyboardType="phone-pad"
             />
           </View>
-          <TouchableOpacity style={styles.saveButton} onPress={handleEditPress}>
+          <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
             <Text style={styles.saveButtonText}>Save Changes</Text>
           </TouchableOpacity>
         </View>
@@ -132,7 +166,6 @@ const ProfileScreen = () => {
     </ScrollView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {

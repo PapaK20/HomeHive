@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "539258091585",
+    "project_id": "homehive-5abec",
+    "storage_bucket": "homehive-5abec.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:539258091585:android:20972714e47df739316ec0",
+        "android_client_info": {
+          "package_name": "com.homehive.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "539258091585-d8n9l137g4sksv3vc86b1g28vvktq57p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.homehive.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "539258091585-vuq6avuov13j7aslmcgbn575jfp75dj4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6gcpgOqPHqfMKShjgIX_y5VT8p1huF0I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "539258091585-vuq6avuov13j7aslmcgbn575jfp75dj4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "539258091585-u2vbnpbii69edonefuj595d76ekmjard.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.homehive.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

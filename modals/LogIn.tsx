@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { Text, StyleSheet, View, TextInput, TouchableOpacity, ScrollView } from "react-native";
 import { Image } from "expo-image";
 import { Border, FontSize } from "../Constants/Styles";
@@ -6,9 +6,38 @@ import Colors, { Color } from "@/Constants/Colors";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { defaultStyles } from "../Constants/Styles";
 import { useNavigation } from '@react-navigation/native';
+import auth from "@react-native-firebase/auth";
 
 const LogIn = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  useEffect (() => {
+   const unsuscribe = auth().onAuthStateChanged(user =>{
+      if (user) {
+        //@ts-ignore
+        navigation.replace('Main')
+      }
+    })
+
+    return unsuscribe;
+    });
+
+
   const navigation = useNavigation();
+
+  const handleLogIn = () => {
+    auth()
+      .signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        console.log(user.email);
+        console.log("User signed in:", user.email);
+      })
+      .catch(error => alert(error.message));
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.logIn}>
@@ -16,18 +45,48 @@ const LogIn = () => {
           <Text style={styles.countryregion}>Country/Region</Text>
           <Text style={styles.ghana233}>Ghana(+233)</Text>
           <View style={styles.lineViewMiddle} />
-          <TextInput style={styles.phoneNumber} 
-          placeholder="Phone Number" 
-          keyboardType="phone-pad"
-          placeholderTextColor={Color.colorGray_200} />
-          <Image
+          <TextInput
+            style={styles.phoneNumber}
+            placeholder="Phone Number"
+            keyboardType="phone-pad"
+            placeholderTextColor={Color.colorGray_200}
+          />
+          {/* <Image
             style={styles.lockLightIcon}
             contentFit="cover"
-            source={require("../assets/lock-light.png")}
+          //   source={require("../assets/lock-light.png")}
+          /> */}
+        </View>
+        <View style={styles.orContainer}>
+          <View style={styles.lineView} />
+          <Text style={styles.or}>OR</Text>
+          <View style={styles.lineView} />
+        </View>
+        
+        <View style={styles.inputContainer}>
+          
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            placeholderTextColor={Color.colorGray_200}
+          />
+          <View style={styles.lineViewMiddle} />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            placeholderTextColor={Color.colorGray_200}
           />
         </View>
-        <TouchableOpacity style={styles.loginbtn} //@ts-ignore
-        onPress={() => navigation.navigate('Main')}>
+        <TouchableOpacity
+          style={styles.loginbtn}
+          onPress={handleLogIn}
+          >
           <Text style={styles.logintxt}>LOG IN</Text>
         </TouchableOpacity>
         <View style={styles.orContainer}>
@@ -36,26 +95,26 @@ const LogIn = () => {
           <View style={styles.lineView} />
         </View>
         <View style={{ gap: 20 }}>
-        <TouchableOpacity style={styles.btnOutline}>
-          <Ionicons name="mail-outline" size={24} style={defaultStyles.btnIcon} />
-          <Text style={styles.btnOutlineText}>Continue with Phone</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.btnOutline}>
+            <Ionicons name="mail-outline" size={24} style={defaultStyles.btnIcon} />
+            <Text style={styles.btnOutlineText}>Continue with Phone</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.btnOutline}>
-          <Ionicons name="logo-apple" size={24} style={defaultStyles.btnIcon} />
-          <Text style={styles.btnOutlineText}>Continue with Apple</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.btnOutline}>
+            <Ionicons name="logo-apple" size={24} style={defaultStyles.btnIcon} />
+            <Text style={styles.btnOutlineText}>Continue with Apple</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.btnOutline}>
-          <Ionicons name="logo-google" size={24} style={defaultStyles.btnIcon} />
-          <Text style={styles.btnOutlineText}>Continue with Google</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.btnOutline}>
+            <Ionicons name="logo-google" size={24} style={defaultStyles.btnIcon} />
+            <Text style={styles.btnOutlineText}>Continue with Google</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.btnOutline}>
-          <Ionicons name="logo-facebook" size={24} style={defaultStyles.btnIcon} />
-          <Text style={styles.btnOutlineText}>Continue with Facebook</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity style={styles.btnOutline}>
+            <Ionicons name="logo-facebook" size={24} style={defaultStyles.btnIcon} />
+            <Text style={styles.btnOutlineText}>Continue with Facebook</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
@@ -215,6 +274,14 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 16,
     fontFamily: 'mon-sb',
+  },
+  input: {
+    fontFamily: 'mon',
+    color: Color.colorGray_200,
+    fontSize: FontSize.size_lg,
+    marginTop: 15,
+    marginBottom: 10,
+    textAlign: 'auto'
   },
 });
 

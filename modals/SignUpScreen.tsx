@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Text, StyleSheet, View, ScrollView, TouchableOpacity, TextInput, Switch } from "react-native";
-import { Image } from "expo-image";
+import { Text, StyleSheet, View, ScrollView, TouchableOpacity, TextInput, Switch, Platform } from "react-native";
 import { FontSize } from "../Constants/Styles";
 import { useNavigation } from "@react-navigation/native";
 import { Color } from "@/Constants/Colors";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import auth from "@react-native-firebase/auth";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
@@ -16,62 +17,108 @@ const SignUpScreen = () => {
     phoneNumber: "",
     password: "",
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [receiveMarketing, setReceiveMarketing] = useState(true);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [date, setDate] = useState(new Date());
+
+  const onDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setDate(selectedDate);
+      const formattedDate = selectedDate.toLocaleDateString();
+      handleInputChange("dateOfBirth", formattedDate);
+    }
+  };
+
+  const handleSignUp = () => {
+    auth()
+      .createUserWithEmailAndPassword(formData.email, formData.password)
+      .then(userCredentials => {
+        const user = userCredentials.user;
+        console.log("User signed up:", user.email);
+      })
+      .catch(error => alert(error.message));
+  };
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData({ ...formData, [field]: value });
   };
 
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    const currentDate = selectedDate || new Date(formData.dateOfBirth);
+    setShowDatePicker(Platform.OS === 'ios');
+    setFormData({ ...formData, dateOfBirth: currentDate.toISOString().split('T')[0] });
+  };
+
   return (
     <ScrollView style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons
-          name="arrow-back" 
-          size={24}
-        />
+        <Ionicons name="arrow-back" size={24} />
       </TouchableOpacity>
-      
+
       <Text style={styles.title}>Sign up</Text>
-      
+
       <View style={styles.inputContainer}>
-      <TextInput style={styles.phoneNumber} 
-          placeholder="First Name" 
+        <TextInput
+          style={styles.phoneNumber}
+          placeholder="First Name"
           keyboardType='twitter'
-          placeholderTextColor={Color.colorGray_200} />
-          <View style={styles.lineViewMiddle} />
-          <TextInput style={styles.phoneNumber} 
-          placeholder="Last Name" 
+          placeholderTextColor={Color.colorGray_200}
+          onChangeText={(text) => handleInputChange("firstName", text)}
+        />
+        <View style={styles.lineViewMiddle} />
+        <TextInput
+          style={styles.phoneNumber}
+          placeholder="Last Name"
           keyboardType="twitter"
-          placeholderTextColor={Color.colorGray_200} />
-          <View style={styles.lineViewMiddle} />
-        </View>
-      
-      <InputField
-        label="Date of birth"
-        placeholder="Date of birth"
-        value={formData.dateOfBirth}
-        onChangeText={(text: string) => handleInputChange("dateOfBirth", text)} placeholder1={undefined} placeholder2={undefined} value1={undefined} value2={undefined} onChangeText1={undefined} onChangeText2={undefined} secureTextEntry={undefined} showPasswordToggle={undefined} onTogglePassword={undefined} prefix={undefined}      />
+          placeholderTextColor={Color.colorGray_200}
+          onChangeText={(text) => handleInputChange("lastName", text)}
+        />
+        <View style={styles.lineViewMiddle} />
+      </View>
+
+      <Text style={styles.inputLabel}>Date of Birth</Text>
+      <TouchableOpacity 
+          style={styles.inputField}
+          onPress={() => setShowDatePicker(true)}>
+      <Text style={[styles.input, !formData.dateOfBirth && {color: Color.colorGray_200}]}>
+        {formData.dateOfBirth || "Date of birth"}
+      </Text>
+      </TouchableOpacity>
+
+      {showDatePicker && (
+    <DateTimePicker
+      value={date}
+      mode="date"
+      display="default"
+      onChange={onDateChange}
+      maximumDate={new Date()}
+      />
+      )}
       <Text style={styles.helperText}>
         You need to be at least 18 years of age. Other people who use StayFinder won't be able to see your date of birth.
       </Text>
-      
+
       <InputField
         label="Email"
         placeholder="Peekay@st.knust.edu.gh"
         value={formData.email}
-        onChangeText={(text: string) => handleInputChange("email", text)} placeholder1={undefined} placeholder2={undefined} value1={undefined} value2={undefined} onChangeText1={undefined} onChangeText2={undefined} secureTextEntry={undefined} showPasswordToggle={undefined} onTogglePassword={undefined} prefix={undefined}      />
-      
+        onChangeText={(text: string) => handleInputChange("email", text)}
+      />
+
       <InputField
         label="Phone Number"
         placeholder="Number"
         value={formData.phoneNumber}
         onChangeText={(text: string) => handleInputChange("phoneNumber", text)}
-        prefix="+233" placeholder1={undefined} placeholder2={undefined} value1={undefined} value2={undefined} onChangeText1={undefined} onChangeText2={undefined} secureTextEntry={undefined} showPasswordToggle={undefined} onTogglePassword={undefined}      />
+        prefix="+233"
+      />
       <Text style={styles.helperText}>
         You are required to enter your current phone number.
       </Text>
-      
+
       <InputField
         label="Password"
         placeholder="******"
@@ -79,30 +126,30 @@ const SignUpScreen = () => {
         onChangeText={(text: string) => handleInputChange("password", text)}
         secureTextEntry={!showPassword}
         showPasswordToggle
-        onTogglePassword={() => setShowPassword(!showPassword)} placeholder1={undefined} placeholder2={undefined} value1={undefined} value2={undefined} onChangeText1={undefined} onChangeText2={undefined} prefix={undefined}      />
+        onTogglePassword={() => setShowPassword(!showPassword)}
+      />
 
-<InputField
+      <InputField
         label="Confirm Password"
         placeholder="******"
         value={formData.password}
         onChangeText={(text: string) => handleInputChange("password", text)}
         secureTextEntry={!showPassword}
-        showPasswordToggle/>
-      
+        showPasswordToggle
+      />
+
       <Text style={styles.termsText}>
         By selecting Agree and continue, I agree to StayFinder's <Text style={styles.link}>Terms of Service</Text>, <Text style={styles.link}>Payments Terms of Service</Text> and <Text style={styles.link}>Anti-Discrimination Policy</Text> and acknowledge the <Text style={styles.link}>Privacy Policy</Text>.
       </Text>
-      
-      <TouchableOpacity style={styles.agreeButton} 
-      //@ts-ignore
-      onPress={() => navigation.navigate('Confirm')}>
+
+      <TouchableOpacity style={styles.agreeButton} onPress={handleSignUp}>
         <Text style={styles.agreeButtonText}>AGREE AND CONTINUE</Text>
       </TouchableOpacity>
-      
+
       <Text style={styles.infoText}>
         StayFinder will send you members-only deals, inspiration, marketing emails, and push notifications. You can opt out of receiving these at any time in your account settings or directly from the marketing notification.
       </Text>
-      
+
       <View style={styles.optOutContainer}>
         <Text style={styles.optOutText}>
           I don't want to receive marketing messages from StayFinder.
@@ -118,17 +165,11 @@ const SignUpScreen = () => {
   );
 };
 
-const InputField = ({ label, placeholder, placeholder1, placeholder2, value, value1, value2, onChangeText, onChangeText1, onChangeText2, secureTextEntry, showPasswordToggle, onTogglePassword, prefix }: {
+const InputField = ({ label, placeholder, value, onChangeText, secureTextEntry, showPasswordToggle, onTogglePassword, prefix }: {
   label: string;
   placeholder?: string;
-  placeholder1?: string;
-  placeholder2?: string;
   value: string;
-  value1?: string;
-  value2?: string;
   onChangeText: (text: string) => void;
-  onChangeText1?: (text: string) => void;
-  onChangeText2?: (text: string) => void;
   secureTextEntry?: boolean;
   showPasswordToggle?: boolean;
   onTogglePassword?: () => void;
@@ -138,31 +179,13 @@ const InputField = ({ label, placeholder, placeholder1, placeholder2, value, val
     <Text style={styles.inputLabel}>{label}</Text>
     <View style={styles.inputField}>
       {prefix && <Text style={styles.prefix}>{prefix}</Text>}
-      {placeholder1 && placeholder2 ? (
-        <>
-          <TextInput
-            style={[styles.input, styles.halfInput]}
-            placeholder={placeholder1}
-            value={value1}
-            onChangeText={onChangeText1}
-          />
-          <View style={styles.inputSeparator} />
-          <TextInput
-            style={[styles.input, styles.halfInput]}
-            placeholder={placeholder2}
-            value={value2}
-            onChangeText={onChangeText2}
-          />
-        </>
-      ) : (
-        <TextInput
-          style={styles.input}
-          placeholder={placeholder}
-          value={value}
-          onChangeText={onChangeText}
-          secureTextEntry={secureTextEntry}
-        />
-      )}
+      <TextInput
+        style={styles.input}
+        placeholder={placeholder}
+        value={value}
+        onChangeText={onChangeText}
+        secureTextEntry={secureTextEntry}
+      />
       {showPasswordToggle && (
         <TouchableOpacity onPress={onTogglePassword} style={styles.showPasswordButton}>
           <Text style={styles.showPasswordText}>Show</Text>
@@ -194,7 +217,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: 20,
-    
   },
   inputLabel: {
     fontFamily: 'mon-sb',
